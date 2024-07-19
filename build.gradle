@@ -31,6 +31,7 @@ dependencies {
 
 	// mysql
 	implementation 'com.mysql:mysql-connector-j'
+	implementation 'mysql:mysql-connector-java'
 
 	// web
 	implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -41,6 +42,10 @@ dependencies {
 	// lombok
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
+
+	// actuator & prometheus
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'io.micrometer:micrometer-registry-prometheus'
 
 	// test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
