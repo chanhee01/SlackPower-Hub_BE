@@ -25,8 +25,16 @@ public class IoTService {
     private final PlugService plugService;
     private final EnergyService energyService;
 
+    @Transactional
     public void autoOff(Long id) {
         // 아래꺼를 기준으로 충족되면 호출
+        RestTemplate restTemplate = new RestTemplate();
+        String serverlessUrl = "https://e9pn9q3v9l.execute-api.ap-northeast-2.amazonaws.com/rescue_first_deploy_api/postPlugOff";
+
+        HttpEntity<Long> entity = new HttpEntity<>(id);
+
+        // Flask 서버에 POST 요청 보내기
+        restTemplate.exchange(serverlessUrl, HttpMethod.POST, entity, EnergyResponse.class);
     }
 
     @Transactional

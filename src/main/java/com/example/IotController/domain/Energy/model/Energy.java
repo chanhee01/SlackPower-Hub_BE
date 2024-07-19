@@ -23,9 +23,16 @@ public class Energy {
 
     private Double energy;
 
+    private Long stack;
+
     @Builder
     public Energy(Plugs plug, Double energy) {
         this.plug = plug;
         this.energy = energy;
+        this.stack = 0L;
+    }
+
+    public void plusStack(Energy energy) {
+        stack = stack + 1;
     }
 }
