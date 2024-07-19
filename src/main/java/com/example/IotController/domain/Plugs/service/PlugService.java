@@ -1,8 +1,8 @@
-package com.example.IotController.domain.Device.service;
+package com.example.IotController.domain.Plugs.service;
 
-import com.example.IotController.domain.Device.dto.AddPlugDto;
-import com.example.IotController.domain.Device.model.Plugs;
-import com.example.IotController.domain.Device.repository.PlugRepository;
+import com.example.IotController.domain.Plugs.dto.AddPlugDto;
+import com.example.IotController.domain.Plugs.model.Plugs;
+import com.example.IotController.domain.Plugs.repository.PlugRepository;
 import com.example.IotController.domain.User.model.Users;
 import com.example.IotController.domain.User.service.UserService;
 import lombok.RequiredArgsConstructor;

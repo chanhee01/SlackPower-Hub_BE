@@ -1,14 +1,15 @@
 package com.example.IotController.domain.Iot.service;
 
-import com.example.IotController.domain.Device.model.Plugs;
-import com.example.IotController.domain.Device.service.PlugService;
+import com.example.IotController.domain.Plugs.model.Plugs;
+import com.example.IotController.domain.Plugs.service.PlugService;
+import com.example.IotController.domain.Energy.dto.AutoOffRequest;
 import com.example.IotController.domain.Energy.dto.EnergyResponse;
 import com.example.IotController.domain.Energy.model.Energy;
 import com.example.IotController.domain.Energy.service.EnergyService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,19 +28,21 @@ public class IoTService {
 
     @Transactional
     public void autoOff(Long id) {
-        // 아래꺼를 기준으로 충족되면 호출
         RestTemplate restTemplate = new RestTemplate();
-        String serverlessUrl = "https://e9pn9q3v9l.execute-api.ap-northeast-2.amazonaws.com/rescue_first_deploy_api/postPlugOff";
+        String serverlessUrl = "https://v3fx8sky03.execute-api.ap-northeast-2.amazonaws.com/newstead/postDevice";
 
-        HttpEntity<Long> entity = new HttpEntity<>(id);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
 
-        // Flask 서버에 POST 요청 보내기
-        restTemplate.exchange(serverlessUrl, HttpMethod.POST, entity, EnergyResponse.class);
+        AutoOffRequest autoOffRequest = new AutoOffRequest("off", id);
+        HttpEntity<AutoOffRequest> entity = new HttpEntity<>(autoOffRequest, headers);
+
+        restTemplate.postForEntity(serverlessUrl, entity, Void.class);
     }
 
     @Transactional
-    @Scheduled(fixedRate = 60000)
-    public void getIoTState() {
+    @Scheduled(fixedRate = 300000)
+    public void getIoTState() throws JsonProcessingException {
 
         List<Plugs> plugs = plugService.findByMode();
 
@@ -48,14 +51,16 @@ public class IoTService {
         for (Long id : plugsId) {
 
             RestTemplate restTemplate = new RestTemplate();
-            String serverlessUrl = "https://e9pn9q3v9l.execute-api.ap-northeast-2.amazonaws.com/rescue_first_deploy_api/getPowerUsage";
+            String serverlessUrl = "https://v3fx8sky03.execute-api.ap-northeast-2.amazonaws.com/newstead/getPowerUsage";
 
             HttpEntity<Long> entity = new HttpEntity<>(id);
 
-            // Flask 서버에 POST 요청 보내기
-            ResponseEntity<EnergyResponse> response = restTemplate.exchange(serverlessUrl, HttpMethod.GET, entity, EnergyResponse.class);
+            ResponseEntity<String> response = restTemplate.exchange(serverlessUrl, HttpMethod.GET, entity, String.class);
 
-            EnergyResponse energyResponse = response.getBody();
+            String responseBody = response.getBody();
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            EnergyResponse energyResponse = objectMapper.readValue(responseBody, EnergyResponse.class);
 
             Long responseId = energyResponse.getId();
             String responseStatus = energyResponse.getStatus();
@@ -71,18 +76,22 @@ public class IoTService {
             }
 
             Boolean existsPlug = energyService.existsByPlugId(responseId);
-            Energy energy = energyService.findById(responseId);
             Plugs plug = plugService.findById(responseId);
+
+            if (!existsPlug) {
+                energyService.save(plug, powerUsage);
+                continue;
+            }
+
+            Energy energy = energyService.findById(responseId);
+
             if (existsPlug) {
                 energy.plusStack(energy);
             }
 
-            if (!existsPlug){
-                energyService.save(plug, powerUsage);
-            }
-
             if (energy.getStack() / 12 >= plug.getTime()) {
                 autoOff(plug.getId());
+                plug.updateStatus();
             }
         }
 

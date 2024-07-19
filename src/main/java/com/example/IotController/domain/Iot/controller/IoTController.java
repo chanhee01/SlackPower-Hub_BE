@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/iot")
+@RequestMapping("/api/IoT")
 public class IoTController {
 
     private final IoTService ioTService;
 
-    @PostMapping("/autoOff/{id}")
+    /*@PostMapping("/autoOff/{id}")
     public void autoOff(@PathVariable Long id) {
         ioTService.autoOff(id);
-    }
+    }*/
 }

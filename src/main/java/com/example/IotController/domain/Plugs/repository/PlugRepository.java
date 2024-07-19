@@ -1,6 +1,6 @@
-package com.example.IotController.domain.Device.repository;
+package com.example.IotController.domain.Plugs.repository;
 
-import com.example.IotController.domain.Device.model.Plugs;
+import com.example.IotController.domain.Plugs.model.Plugs;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

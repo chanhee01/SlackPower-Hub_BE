@@ -1,6 +1,6 @@
 package com.example.IotController.domain.Energy.service;
 
-import com.example.IotController.domain.Device.model.Plugs;
+import com.example.IotController.domain.Plugs.model.Plugs;
 import com.example.IotController.domain.Energy.model.Energy;
 import com.example.IotController.domain.Energy.repository.EnergyRepository;
 import lombok.RequiredArgsConstructor;

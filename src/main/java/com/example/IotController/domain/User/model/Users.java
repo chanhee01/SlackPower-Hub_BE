@@ -1,6 +1,6 @@
 package com.example.IotController.domain.User.model;
 
-import com.example.IotController.domain.Device.model.Plugs;
+import com.example.IotController.domain.Plugs.model.Plugs;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;

@@ -1,6 +1,6 @@
 package com.example.IotController.domain.Energy.model;
 
-import com.example.IotController.domain.Device.model.Plugs;
+import com.example.IotController.domain.Plugs.model.Plugs;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
